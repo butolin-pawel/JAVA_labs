@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link rel="icon" type="image/png" th:href="@{/favicon.ico}"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<div class="fluid-container" th:fragment="navi(activeTab)">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary ">
+        <a class="navbar-brand" th:href="@{/}">Project</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+                      <ul class="navbar-nav">
+                <li class="navbar-nav"  style=" margin-top: 8px;">
+                    <a th:href="@{'/products/set1'}"  style="color: white; margin-right: 5px; " th:text=" Главная_страница"/>
+                </li>
+                <li class="nav-item" style=" margin-top: 8px;">
+                    <a th:href="@{'/products/set2'}"   style="color: white; margin-right: 5px; "  th:text="Каталог_товаров"/>
+                </li>
+                <li class="nav-item" style=" margin-top: 8px;">
+                    <a th:href="@{'/products/set3'}"   style="color: white; margin-right: 5px;" th:text="Информация"/>
+                </li>
+                <li class="nav-item" style="margin-left: auto">
+                    <div sec:authorize="isAuthenticated()" style="margin-top: 8px;">
+                        <span style=" color: white; size: 16px;margin-right: 10px;">Пользователь: </span>
+                        <span style=" color: white; size: 16px;margin-right: 10px;" sec:authentication="principal.username" />
+                    </div>
+                </li>
+                <li sec:authorize="isAuthenticated()" class="nav-item">
+                    <form th:action="@{/logout}" method="POST">
+                        <input style="margin-left:auto;" type="submit" class="btn btn-danger" value="Logout"/>
+                    </form>
+                </li>
+            <li sec:authorize="isAnonymous()" >
+                <form th:action="@{/authenticateTheUser}" method="POST">
+                    <div class="input-group-prepend">
+                   <input required placeholder="Login" name="username"  aria-describedby="inputGroup-sizing-sm" style="margin-right: 10px; border-radius: 5px;">
+                   <input required type="password" placeholder="Password" name="password" aria-describedby="inputGroup-sizing-sm"  style="margin-right: 10px ; border-radius: 5px;">
+                   <button type="submit"  class="btn btn-primary" style="background-color: darkblue" >Войти</button>
+                    </div>
+                </form>
+            </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="visible-md" style="height:80px;"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8"/>
+    <title>Каталог товаров</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<div th:replace="~{navigation :: navi(Home)}"/>
+<div th:if="${st==1}"><h1>Hello,World</h1></div>
+<div th:if="${st==3}"><h1>Склад реализованный на JAVA</h1></div>
+<div class="container" th:if="${st ==2}">
+    <h1> Фильтр</h1>
+    <div>
+        <form th:action="@{/products/filtr}" th:object="${Filtr}" method="post">
+
+            <label>Название</label> <br>
+            <input th:value="*{substr}" th:field="*{substr}" placeholder="title"  class="form-control"/><br>
+            <label> Минимальная цена </label> <br>
+            <input th:value="*{mincost}"th:field="*{mincost}" placeholder="min"  pattern="\d*" class="form-control"/><br>
+            <label> Максимальная цена</label> <br>
+            <input th:value="*{maxcost}"  th:field="*{maxcost}" placeholder="max"  pattern="\d*" class="form-control">
+            <button type="submit"  class="btn btn-primary" style="margin-top: 10px;">Установить</button>
+        </form>
+        <form th:action="@{/products/reset}" th:object="${Filtr}" method="post" >
+            <button type="submit"  class="btn btn-primary" style="margin-top: 10px;">Сбросить</button>
+        </form>
+    </div>
+    <h1>Товары</h1>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название товара</th>
+            <th>Цена</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="product : ${products}">
+            <div th:if = "${!(product.id == editid)}">
+                <td th:text="${product.id}"/>
+                <td th:text="${product.title}"/>
+                <td th:text="${product.price}"/>
+                <td>
+                    <a th:href="@{'/products/show/' + ${product.id}}" th:text="Просмотреть"/>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/products/edit/' + ${product.id}}" th:text="Изменить"/>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/products/del/'  + ${product.id}}" th:text="Удалить"/>
+                </td>
+
+            </div>
+            <div th:if = "${product.id == editid}">
+                <form th:action="@{/products/edit}">
+                    <input type="text" th:value="${product.id}" name="id" pattern="\d*" readonly required />
+                    <input th:value="${product.title}" placeholder="title" name="title" required/>
+                    <input th:value="${product.price}" pattern="\d*" name="price" required/>
+                    <button type="submit">Отправить</button>
+                </form>
+            </div>
+        </tr>
+        <div></div>
+
+
+
+        </tbody>
+    </table>
+    <tr>
+        <form th:if ="${ad}" th:action="@{/products/add}"
+              th:object="${product}" method="post" class="form-horizontal" sec:authorize="hasRole('ADMIN')">
+            <input  placeholder="title" name="title" required/>
+            <input placeholder="price" pattern="\d*" name="price" required/>
+            <button type="submit">Добавить</button>
+        </form>
+    </tr>
+    <a th:each="p : ${pages}" th:text="${p + 1}"  th:href="@{'/products/page/' + ${p}}" style="margin-right: 10px;"/>
+    <br>
+    <form th:if="${!ad}" th:action="@{/products/add}" method="get" sec:authorize="hasRole('ADMIN')">
+        <button type="submit"   class="btn btn-primary" style="margin-top: 10px;">Добавить</button>
+    </form>
+    <span th:text="${'Всего товаров ' + countofprod}"/>
+    <br>
+    <h1>Наиболее просматриваемые товары</h1><br>
+    <div th:each="tv : ${mostview}">
+        <span  th:text="${ tv.title}"/>
+        <span th:text="${'Цена: ' + tv.price + 'p.'}"/>
+        <span  th:text="${'Просмотры : '+ tv.view}"/>
+    </div>
+    <div style="height: 70px"></div>
+
+</body>
+</html>
